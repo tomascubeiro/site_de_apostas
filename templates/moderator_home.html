@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel do Moderador - Plataforma de Apostas</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #0a061c;
+            margin: 0;
+            padding: 0;
+            color: #fff;
+        }
+
+        .navbar {
+            background-color: #190d4a;
+            color: #f16327;
+            padding: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        .navbar h1 {
+            margin: 0;
+            font-size: 20px;
+            font-weight: normal;
+            text-align: center;
+            font-size: x-large;
+        }
+
+
+        .container {
+            max-width: 800px;
+            margin: 100px auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+            color: #000;
+        }
+
+        h2, h3 {
+            text-align: center;
+            color: #333;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        table, th, td {
+            border: 1px solid #ccc;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #f8f8f8;
+        }
+
+        .btn {
+            display: inline-block;
+            margin: 10px 0;
+            padding: 10px 20px;
+            color: #fff;
+            background-color: #007bff;
+            text-align: center;
+            text-decoration: none;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+        }
+        .btn:hover {
+            background-color: #0056b3;
+        }
+        .btn-approve {
+            background-color: #28a745;
+        }
+        .btn-approve:hover {
+            background-color: #218838;
+        }
+        .btn-reject {
+            background-color: #dc3545;
+        }
+        .btn-reject:hover {
+            background-color: #c82333;
+        }
+
+        select {
+            padding: 8px;
+            margin-right: 10px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+        <div class="navbar">
+        <h1>Painel do Moderador</h1>
+    </div>
+
+    <div class="container">
+        <h2>Painel do Moderador</h2>
+        <h3>Eventos Pendentes</h3>
+        {% if eventos_pendentes %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Título</th>
+                        <th>Descrição</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for evento in eventos_pendentes %}
+                        <tr>
+                            <td>{{ evento.titulo }}</td>
+                            <td>{{ evento.descricao }}</td>
+                            <td>
+                                <form action="{{ url_for('evaluate_event', event_id=evento.id) }}" method="post" style="display: inline;">
+                                    <input type="hidden" name="status" value="aprovado">
+                                    <button type="submit" class="btn btn-approve">Aprovar</button>
+                                </form>
+                                <form action="{{ url_for('evaluate_event', event_id=evento.id) }}" method="post" style="display: inline;">
+                                    <input type="hidden" name="status" value="reprovado">
+                                    <button type="submit" class="btn btn-reject">Reprovar</button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>Não há eventos pendentes.</p>
+        {% endif %}
+
+        <h3>Eventos Aprovados</h3>
+        {% if eventos_aprovados %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Título</th>
+                        <th>Descrição</th>
+                        <th>Data do Evento</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for evento in eventos_aprovados %}
+                        <tr>
+                            <td>{{ evento.titulo }}</td>
+                            <td>{{ evento.descricao }}</td>
+                            <td>{{ evento.data_evento }}</td>
+                            <td>
+                                <form action="{{ url_for('finish_event', event_id=evento.id) }}" method="post" style="display: inline;">
+                                    <label for="resultado">Resultado:</label>
+                                    <select id="resultado" name="resultado" required>
+                                        <option value="Sim">Sim</option>
+                                        <option value="Não">Não</option>
+                                    </select>
+                                    <button type="submit" class="btn">Finalizar Evento</button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>Não há eventos aprovados no momento.</p>
+        {% endif %}
+    </div>
+</body>
+</html>

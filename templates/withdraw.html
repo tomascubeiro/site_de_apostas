@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Saque</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #0a061c;
+            margin: 0;
+            padding: 0;
+        }
+        .navbar {
+            background-color: #190d4a;
+            overflow: hidden;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .navbar a {
+            color: #f16327;
+            text-decoration: none;
+            padding: 14px 20px;
+            font-size: larger;
+        }
+        .navbar a:hover {
+            background-color: #fc8b00;
+            color: rgb(255, 255, 255);
+            border-radius: 3px;
+        }
+        .container {
+            max-width: 400px;
+            margin: 100px auto 0;
+            padding: 20px;
+            background-color: white;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: stretch;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        label {
+            margin-bottom: 5px;
+        }
+        input[type="number"], input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+        }
+        button {
+            padding: 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <a href="{{ url_for('home') }}">Plataforma de Apostas</a>
+        <div>
+            <a href="{{ url_for('add_new_event') }}">Criar evento</a>
+            <a href="{{ url_for('wallet') }}">Minha Carteira</a>
+            <a href="{{ url_for('logout') }}">Sair</a>
+        </div>
+    </div>
+    <div class="container">
+        <h1>Solicitar Saque</h1>
+        <form method="POST" action="/withdraw">
+            <label for="valor_saque">Valor a ser sacado:</label>
+            <input type="number" id="valor_saque" name="valor_saque" step="0.01" min="0" required>
+
+            <label for="banco">Banco:</label>
+            <input type="text" id="banco" name="banco" required>
+
+            <label for="agencia">Agência:</label>
+            <input type="text" id="agencia" name="agencia" required>
+
+            <label for="conta">Conta:</label>
+            <input type="text" id="conta" name="conta" required>
+
+            <label for="chave_pix">Chave PIX (opcional):</label>
+            <input type="text" id="chave_pix" name="chave_pix">
+
+            <button type="submit">Sacar</button>
+        </form>
+    </div>
+</body>
+</html>

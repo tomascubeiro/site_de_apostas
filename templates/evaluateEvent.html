@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Avaliar Evento - Plataforma de Apostas</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h2 {
+            text-align: center;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        select {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+        }
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            background-color: #007bff;
+            color: white;
+            text-align: center;
+            text-decoration: none;
+            border-radius: 3px;
+            border: none;
+            cursor: pointer;
+        }
+        .btn:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Avaliar Evento</h2>
+        <h3>{{ evento.titulo }}</h3>
+        <p>{{ evento.descricao }}</p>
+        <p><strong>Data do Evento:</strong> {{ evento.data_evento }}</p>
+        <form action="{{ url_for('evaluate_event', event_id=evento.id) }}" method="post">
+            <div class="form-group">
+                <label for="status">Status do Evento:</label>
+                <select id="status" name="status" required>
+                    <option value="aprovado">Aprovar</option>
+                    <option value="reprovado">Reprovar</option>
+                </select>
+            </div>
+            <button type="submit" class="btn">Enviar Avaliação</button>
+        </form>
+    </div>
+</body>
+</html>

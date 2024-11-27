@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minha Carteira - Plataforma de Apostas</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #0a061c;
+            margin: 0;
+            padding: 0;
+        }
+        .navbar {
+            background-color: #190d4a;
+            overflow: hidden;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .navbar a {
+            color: #f16327;
+            text-decoration: none;
+            padding: 14px 20px;
+            font-size: larger;
+        }
+        .navbar a:hover {
+            background-color: #fc8b00;
+            color: rgb(255, 255, 255);
+            color: black;
+            border-radius: 3px;
+        }
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h2 {
+            text-align: center;
+        }
+        .balance {
+            text-align: center;
+            font-size: 1.5em;
+            margin-bottom: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        table, th, td {
+            border: 1px solid #ccc;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #f8f8f8;
+        }
+        .btn {
+            display: block;
+            width: 97%;
+            padding: 10px;
+            background-color: #007bff;
+            color: white;
+            text-align: center;
+            text-decoration: none;
+            border-radius: 3px;
+            border: none;
+            cursor: pointer;
+            margin-bottom: 6px;
+        }
+        .btn:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <a href="{{ url_for('home') }}">Plataforma de Apostas</a>
+        <div>
+            <a href="{{ url_for('add_new_event') }}">Criar evento</a>
+            <a href="{{ url_for('wallet') }}">Minha Carteira</a>
+            <a href="{{ url_for('logout') }}">Sair</a>
+        </div>
+    </div>
+    <div class="container">
+        <h2>Minha Carteira</h2>
+        <div class="balance">
+            Saldo Atual: R$ {{ saldo }}
+        </div>
+        <h3>Histórico de Apostas</h3>
+        {% if apostas %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Evento</th>
+                        <th>Valor Apostado (R$)</th>
+                        <th>Escolha</th>
+                        <th>Data</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for aposta in apostas %}
+                        <tr>
+                            <td>{{ aposta.evento_id }}</td>
+                            <td>{{ aposta.valor }}</td>
+                            <td>{{ aposta.escolha }}</td>
+                            <td>{{ aposta.data }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>Você ainda não realizou nenhuma aposta.</p>
+        {% endif %}
+        <a href="{{ url_for('add_funds') }}" class="btn">Adicionar Fundos</a>
+        <a href="{{('withdraw')}}" class="btn">Realizar Saque</a>
+    </div>
+</body>
+</html>
