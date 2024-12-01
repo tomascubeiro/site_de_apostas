@@ -36,8 +36,8 @@
         }
 
         .container {
-            max-width: 800px;
-            margin: 50px auto;
+            max-width: 1200px;
+            margin: 20px auto;
             padding: 20px;
             background-color: white;
             border-radius: 5px;
@@ -46,60 +46,72 @@
 
         h2 {
             text-align: center;
+            color: #f16327;
+        }
+
+        h3 {
+            color: #190d4a;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .event-sections {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: space-between;
+        }
+
+        .event-section {
+            flex: 1;
+            min-width: 300px;
+            max-width: 30%;
+            background-color: #f9f9f9;
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .event-section h3 {
+            text-align: center;
+            margin-bottom: 15px;
         }
 
         .card {
             background-color: #fff;
             border: 1px solid #ccc;
             border-radius: 5px;
-            padding: 20px;
-            margin-bottom: 20px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-
-        .card-title {
-            font-size: 1.5em;
+            padding: 15px;
             margin-bottom: 10px;
-        }
-
-        .card-description {
-            margin-bottom: 15px;
-        }
-
-        .btn {
-            display: inline-block;
-            margin: 10px 0;
-            padding: 10px 20px;
-            color: #fff;
-            background-color: #007bff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             text-align: center;
+        }
+
+        .card h4 {
+            font-size: 1.2em;
+            margin-bottom: 10px;
+            color: #190d4a;
+        }
+
+        .card p {
+            margin: 5px 0;
+            color: #555;
+        }
+
+        .card .btn {
+            display: inline-block;
+            padding: 8px 12px;
+            color: white;
+            background-color: #007bff;
             text-decoration: none;
             border-radius: 5px;
-            border: none;
-            cursor: pointer;
+            margin-top: 10px;
+            font-size: 0.9em;
+            transition: background-color 0.3s ease;
         }
 
-        .btn:hover {
+        .card .btn:hover {
             background-color: #0056b3;
-        }
-
-        .flash-messages {
-            margin-top: 20px;
-            padding: 10px;
-        }
-
-        .alert {
-            padding: 10px;
-            border-radius: 5px;
-            color: white;
-        }
-
-        .alert-success {
-            background-color: #4CAF50;
-        }
-
-        .alert-error {
-            background-color: #f44336;
         }
 
         .search-container {
@@ -121,13 +133,8 @@
             gap: 10px;
         }
 
-        .form-group {
-            flex: 1;
-            margin-right: 10px;
-        }
-
         .search-input {
-            width: 100%;
+            flex: 1;
             padding: 12px 20px;
             border: 2px solid #ccc;
             border-radius: 30px;
@@ -196,68 +203,82 @@
 
     <div class="search-container">
         <form method="GET" action="{{ url_for('search_events') }}">
-            <div class="form-group">
-                <input type="text" id="query" name="query" placeholder="Buscar eventos..." class="search-input"
-                    value="{{ request.args.get('query', '') }}">
-            </div>
-
-            <div class="form-group">
-                <select id="categoria" name="categoria" class="search-select">
-                    <option value="">Todas as Categorias</option>
-                    <option value="Esportes" {% if request.args.get('categoria')=='Esportes' %}selected{% endif %}>
-                        Esportes</option>
-                    <option value="Bolsa" {% if request.args.get('categoria')=='Bolsa' %}selected{% endif %}>Bolsa
-                    </option>
-                    <option value="Eventos Naturais" {% if request.args.get('categoria')=='Eventos Naturais'
-                        %}selected{% endif %}>Eventos Naturais</option>
-                </select>
-            </div>
-
+            <input type="text" id="query" name="query" placeholder="Buscar eventos..." class="search-input"
+                value="{{ request.args.get('query', '') }}">
+            <select id="categoria" name="categoria" class="search-select">
+                <option value="">Todas as Categorias</option>
+                <option value="Esportes" {% if request.args.get('categoria')=='Esportes' %}selected{% endif %}>Esportes
+                </option>
+                <option value="Bolsa" {% if request.args.get('categoria')=='Bolsa' %}selected{% endif %}>Bolsa</option>
+                <option value="Eventos Naturais" {% if request.args.get('categoria')=='Eventos Naturais' %}selected{%
+                    endif %}>
+                    Eventos Naturais</option>
+            </select>
             <button type="submit" class="search-btn">Pesquisar</button>
         </form>
     </div>
 
     <div class="container">
         <h2>Painel do Usuário</h2>
-        <h3>Eventos Disponíveis para Aposta</h3>
-        {% if eventos_disponiveis %}
-        {% for evento in eventos_disponiveis %}
-        <div class="card">
-            <div class="card-title">{{ evento.titulo }}</div>
-            <div class="card-description">{{ evento.descricao }}</div>
-            <div>Data do Evento: {{ evento.data_evento }}</div>
-            <form action="{{ url_for('bet_on_event', event_id=evento.id) }}" method="get">
-                <button type="submit" class="btn">Ver Detalhes e Apostar</button>
-            </form>
-        </div>
-        {% endfor %}
-        {% else %}
-        <p>Não há eventos disponíveis no momento.</p>
-        {% endif %}
 
-        <h3>Fazer Aposta no Evento</h3>
-        {% if evento %}
-        <div class="card">
-            <div class="card-title">{{ evento.titulo }}</div>
-            <div class="card-description">{{ evento.descricao }}</div>
-            <div>Data do Evento: {{ evento.data_evento }}</div>
-            <form action="{{ url_for('bet_on_event', event_id=evento.id) }}" method="post">
-                <div class="form-group">
-                    <label for="valor_aposta">Valor da Aposta (R$):</label>
-                    <input type="number" id="valor_aposta" name="valor_aposta" min="1" step="0.01" required>
+        <div class="event-sections">
+
+            <!-- Seção de Eventos Mais Apostados -->
+            <div class="event-section">
+                <h3>Eventos Mais Apostados</h3>
+                {% if eventos_mais_apostados %}
+                {% for evento in eventos_mais_apostados %}
+                <div class="card">
+                    <h4>{{ evento.titulo }}</h4>
+                    <p>{{ evento.descricao }}</p>
+                    <p>Total de Apostas: {{ evento.total_apostas }}</p>
+                    <p>Data do Evento: {{ evento.data_evento }}</p>
+                    <a href="{{ url_for('bet_on_event', event_id=evento.id) }}" class="btn">Apostar</a>
                 </div>
-                <div class="form-group">
-                    <label for="escolha">Escolha:</label>
-                    <select id="escolha" name="escolha" required>
-                        <option value="Sim">Acontecerá</option>
-                        <option value="Não">Não Acontecerá</option>
-                    </select>
+                {% endfor %}
+                {% else %}
+                <p>Não há eventos mais apostados no momento.</p>
+                {% endif %}
+            </div>
+
+            <!-- Seção de Eventos Próximos ao Fim do Prazo -->
+            <div class="event-section">
+                <h3>Eventos Próximos ao Fim do Prazo</h3>
+                {% if eventos_proximos %}
+                {% for evento in eventos_proximos %}
+                <div class="card">
+                    <h4>{{ evento.titulo }}</h4>
+                    <p>{{ evento.descricao }}</p>
+                    <p>Fim das Apostas: {{ evento.fim_apostas }}</p>
+                    <p>Data do Evento: {{ evento.data_evento }}</p>
+                    <a href="{{ url_for('bet_on_event', event_id=evento.id) }}" class="btn">Apostar</a>
                 </div>
-                <button type="submit" class="btn">Fazer Aposta</button>
-            </form>
+                {% endfor %}
+                {% else %}
+                <p>Não há eventos próximos ao fim do prazo no momento.</p>
+                {% endif %}
+            </div>
+
+            <!-- Seção de Todos os Eventos Disponíveis -->
+            <div class="event-section">
+                <h3>Eventos Disponíveis</h3>
+                {% if eventos_disponiveis %}
+                {% for evento in eventos_disponiveis %}
+                <div class="card">
+                    <h4>{{ evento.titulo }}</h4>
+                    <p>{{ evento.descricao }}</p>
+                    <p>Data do Evento: {{ evento.data_evento }}</p>
+                    <a href="{{ url_for('bet_on_event', event_id=evento.id) }}" class="btn">Apostar</a>
+                </div>
+                {% endfor %}
+                {% else %}
+                <p>Não há eventos disponíveis no momento.</p>
+                {% endif %}
+            </div>
+
         </div>
-        {% endif %}
     </div>
+
 </body>
 
 </html>
