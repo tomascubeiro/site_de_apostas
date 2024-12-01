@@ -61,6 +61,9 @@ create table moderadores (
     FOREIGN KEY (usuario_id) REFERENCES usuarios(id)
 );
 
+ALTER TABLE eventos ADD COLUMN categoria VARCHAR(50) NOT NULL;
+
+
 select*from moderadores;
 
 CREATE INDEX idx_evento_status ON eventos (status);

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,6 +12,7 @@
             margin: 0;
             padding: 0;
         }
+
         .navbar {
             background-color: #190d4a;
             overflow: hidden;
@@ -19,18 +21,21 @@
             justify-content: space-between;
             align-items: center;
         }
+
         .navbar a {
             color: #f16327;
             text-decoration: none;
             padding: 14px 20px;
             font-size: larger;
         }
+
         .navbar a:hover {
             background-color: #fc8b00;
             color: rgb(255, 255, 255);
-            color: black;
+            color: rgb(255, 255, 255);
             border-radius: 3px;
         }
+
         .container {
             max-width: 600px;
             margin: 50px auto;
@@ -39,29 +44,39 @@
             border-radius: 5px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
+
         h2 {
             text-align: center;
         }
+
         .balance {
             text-align: center;
             font-size: 1.5em;
             margin-bottom: 20px;
         }
+
         table {
             width: 100%;
             border-collapse: collapse;
             margin-bottom: 20px;
         }
-        table, th, td {
+
+        table,
+        th,
+        td {
             border: 1px solid #ccc;
         }
-        th, td {
+
+        th,
+        td {
             padding: 10px;
             text-align: left;
         }
+
         th {
             background-color: #f8f8f8;
         }
+
         .btn {
             display: block;
             width: 97%;
@@ -75,12 +90,45 @@
             cursor: pointer;
             margin-bottom: 6px;
         }
+
         .btn:hover {
             background-color: #0056b3;
         }
+
+        .flash-messages {
+            margin-top: 20px;
+            padding: 10px;
+        }
+
+        .alert {
+            padding: 10px;
+            border-radius: 5px;
+            color: white;
+        }
+
+        .alert-success {
+            background-color: #4CAF50;
+        }
+
+        .alert-error {
+            background-color: #f44336;
+        }
     </style>
 </head>
+
 <body>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <div class="flash-messages">
+        {% for category, message in messages %}
+        <div class="alert alert-{{ category }}">
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    {% endwith %}
+
     <div class="navbar">
         <a href="{{ url_for('home') }}">Plataforma de Apostas</a>
         <div>
@@ -96,31 +144,57 @@
         </div>
         <h3>Histórico de Apostas</h3>
         {% if apostas %}
-            <table>
-                <thead>
-                    <tr>
-                        <th>Evento</th>
-                        <th>Valor Apostado (R$)</th>
-                        <th>Escolha</th>
-                        <th>Data</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for aposta in apostas %}
-                        <tr>
-                            <td>{{ aposta.evento_id }}</td>
-                            <td>{{ aposta.valor }}</td>
-                            <td>{{ aposta.escolha }}</td>
-                            <td>{{ aposta.data }}</td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+        <table>
+            <thead>
+                <tr>
+                    <th>Evento</th>
+                    <th>Valor Apostado (R$)</th>
+                    <th>Escolha</th>
+                    <th>Data</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for aposta in apostas %}
+                <tr>
+                    <td>{{ aposta.evento_id }}</td>
+                    <td>{{ aposta.valor }}</td>
+                    <td>{{ aposta.escolha }}</td>
+                    <td>{{ aposta.data }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
         {% else %}
-            <p>Você ainda não realizou nenhuma aposta.</p>
+        <p>Você ainda não realizou nenhuma aposta.</p>
         {% endif %}
+
+        <h3>Histórico de Saques</h3>
+        {% if saques %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Valor (R$)</th>
+                    <th>Data</th>
+                    <th>Taxa (R$)</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for saque in saques %}
+                <tr>
+                    <td>{{ saque.valor_saque }}</td>
+                    <td>{{ saque.data_saque }}</td>
+                    <td>{{ saque.taxa }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p>Você ainda não realizou nenhum saque.</p>
+        {% endif %}
+
         <a href="{{ url_for('add_funds') }}" class="btn">Adicionar Fundos</a>
-        <a href="{{('withdraw')}}" class="btn">Realizar Saque</a>
+        <a href="{{ url_for('withdraw') }}" class="btn">Realizar Saque</a>
     </div>
 </body>
+
 </html>

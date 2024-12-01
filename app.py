@@ -20,31 +20,41 @@ def get_db_connection():
         return conn
     except mysql.connector.Error as err:
         if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
-            print("Erro de acesso: Verifique usuário e senha.")
+            flash("Erro de acesso: Verifique usuário e senha.", 'error')
         elif err.errno == errorcode.ER_BAD_DB_ERROR:
-            print("Banco de dados não existe.")
+            flash("Banco de dados não existe.", 'error')
         else:
-            print(err)
+            flash(f"Erro: {err}", 'error')
         return None
 
 @app.route('/')
 def landing():
     return render_template('landing.html')
 
+from datetime import datetime, timedelta
+
 @app.route('/home')
 def home():
     if 'user_id' not in session:
         flash('Você precisa estar logado para acessar esta página.', 'error')
         return redirect(url_for('login'))
-    if session.get('is_moderator'):
-        return redirect(url_for('moderator_home'))
     
     conn = get_db_connection()
     if conn is None:
         flash('Erro ao conectar ao banco de dados. Por favor, tente mais tarde.', 'error')
         return redirect(url_for('landing'))
+    
     cursor = conn.cursor(dictionary=True)
-    cursor.execute("SELECT * FROM eventos WHERE status='aprovado' AND status != 'finalizado'")
+    
+    today = datetime.today()
+    upcoming_date = today + timedelta(days=2)
+    
+    cursor.execute("""
+        SELECT * FROM eventos 
+        WHERE status='aprovado' AND status != 'finalizado'
+        AND data_evento BETWEEN %s AND %s
+    """, (today, upcoming_date))
+    
     eventos = cursor.fetchall()
     cursor.close()
     conn.close()
@@ -57,8 +67,10 @@ def search_events():
         return redirect(url_for('login'))
     
     query = request.args.get('query', '').strip()
-    if not query:
-        flash('Por favor, insira um termo de busca.', 'warning')
+    categoria = request.args.get('categoria', '').strip()
+    
+    if not query and not categoria:
+        flash('Por favor, insira um termo de busca ou selecione uma categoria.', 'warning')
         return redirect(url_for('home'))
 
     conn = get_db_connection()
@@ -68,11 +80,18 @@ def search_events():
     
     cursor = conn.cursor(dictionary=True)
     try:
-        cursor.execute("""
+        sql_query = """
             SELECT * FROM eventos 
-            WHERE status='aprovado' AND status != 'finalizado' 
+            WHERE status='aprovado' AND status != 'finalizado'
             AND (titulo LIKE %s OR descricao LIKE %s)
-        """, (f"%{query}%", f"%{query}%"))
+        """
+        params = [f"%{query}%", f"%{query}%"]
+        
+        if categoria:
+            sql_query += " AND categoria = %s"
+            params.append(categoria)
+        
+        cursor.execute(sql_query, tuple(params))
         eventos = cursor.fetchall()
     except mysql.connector.Error as err:
         flash(f'Erro ao buscar eventos: {err}', 'error')
@@ -82,7 +101,7 @@ def search_events():
         conn.close()
 
     if not eventos:
-        flash('Nenhum evento encontrado para o termo de busca.', 'info')
+        flash('Nenhum evento encontrado para o termo de busca ou categoria selecionada.', 'info')
 
     return render_template('home.html', eventos_disponiveis=eventos)
 
@@ -177,6 +196,7 @@ def add_new_event():
         data_evento = request.form['data_evento']
         inicio_apostas = request.form['inicio_apostas']
         fim_apostas = request.form['fim_apostas']
+        categoria = request.form['categoria']
         
         conn = get_db_connection()
         if conn is None:
@@ -185,8 +205,10 @@ def add_new_event():
 
         cursor = conn.cursor()
         try:
-            cursor.execute("INSERT INTO eventos (titulo, descricao, valor_cota, data_evento, inicio_apostas, fim_apostas, criador_id, status) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)",
-                           (titulo, descricao, valor_cota, data_evento, inicio_apostas, fim_apostas, session['user_id'], 'aguardando_aprovacao'))
+            cursor.execute("""
+                INSERT INTO eventos (titulo, descricao, valor_cota, data_evento, inicio_apostas, fim_apostas, criador_id, status, categoria) 
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+            """, (titulo, descricao, valor_cota, data_evento, inicio_apostas, fim_apostas, session['user_id'], 'aguardando_aprovacao', categoria))
             conn.commit()
             flash('Evento criado com sucesso! Aguarde aprovação.', 'success')
         except mysql.connector.Error as err:

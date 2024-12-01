@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,6 +12,7 @@
             margin: 0;
             padding: 0;
         }
+
         .navbar {
             background-color: #190d4a;
             overflow: hidden;
@@ -19,17 +21,20 @@
             justify-content: space-between;
             align-items: center;
         }
+
         .navbar a {
             color: #f16327;
             text-decoration: none;
             padding: 14px 20px;
             font-size: larger;
         }
+
         .navbar a:hover {
             background-color: #fc8b00;
             color: black;
             border-radius: 3px;
         }
+
         .container {
             max-width: 600px;
             margin: 50px auto;
@@ -38,29 +43,39 @@
             border-radius: 5px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
+
         h2 {
             text-align: center;
         }
+
         .event-details {
             text-align: center;
             font-size: 1.2em;
             margin-bottom: 20px;
         }
+
         table {
             width: 100%;
             border-collapse: collapse;
             margin-bottom: 20px;
         }
-        table, th, td {
+
+        table,
+        th,
+        td {
             border: 1px solid #ccc;
         }
-        th, td {
+
+        th,
+        td {
             padding: 10px;
             text-align: left;
         }
+
         th {
             background-color: #f8f8f8;
         }
+
         .btn {
             display: block;
             width: 97%;
@@ -74,12 +89,45 @@
             cursor: pointer;
             margin-bottom: 6px;
         }
+
         .btn:hover {
             background-color: #0056b3;
         }
+
+        .flash-messages {
+            margin-top: 20px;
+            padding: 10px;
+        }
+
+        .alert {
+            padding: 10px;
+            border-radius: 5px;
+            color: white;
+        }
+
+        .alert-success {
+            background-color: #4CAF50;
+        }
+
+        .alert-error {
+            background-color: #f44336;
+        }
     </style>
 </head>
+
 <body>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <div class="flash-messages">
+        {% for category, message in messages %}
+        <div class="alert alert-{{ category }}">
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    {% endwith %}
+
     <div class="navbar">
         <a href="{{ url_for('home') }}">Plataforma de Apostas</a>
         <div>
@@ -116,4 +164,5 @@
         </form>
     </div>
 </body>
+
 </html>

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,6 +12,7 @@
             margin: 0;
             padding: 0;
         }
+
         .navbar {
             background-color: #190d4a;
             overflow: hidden;
@@ -19,17 +21,20 @@
             justify-content: space-between;
             align-items: center;
         }
+
         .navbar a {
             color: #f16327;
             text-decoration: none;
             padding: 14px 20px;
             font-size: larger;
         }
+
         .navbar a:hover {
             background-color: #fc8b00;
             color: rgb(255, 255, 255);
             border-radius: 3px;
         }
+
         .container {
             max-width: 600px;
             margin: 50px auto;
@@ -38,23 +43,30 @@
             border-radius: 5px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
+
         h2 {
             text-align: center;
         }
+
         .form-group {
             margin-bottom: 15px;
         }
+
         label {
             display: block;
             margin-bottom: 5px;
         }
-        input[type="text"], input[type="number"], input[type="datetime-local"] {
+
+        input[type="text"],
+        input[type="number"],
+        input[type="datetime-local"] {
             width: 100%;
             padding: 8px;
             box-sizing: border-box;
             border: 1px solid #ccc;
             border-radius: 3px;
         }
+
         .btn {
             display: block;
             width: 100%;
@@ -67,11 +79,32 @@
             border: none;
             cursor: pointer;
         }
+
         .btn:hover {
             background-color: #0056b3;
         }
+
+        .flash-messages {
+            margin-top: 20px;
+            padding: 10px;
+        }
+
+        .alert {
+            padding: 10px;
+            border-radius: 5px;
+            color: white;
+        }
+
+        .alert-success {
+            background-color: #4CAF50;
+        }
+
+        .alert-error {
+            background-color: #f44336;
+        }
     </style>
 </head>
+
 <body>
     <div class="navbar">
         <a href="{{ url_for('home') }}">Plataforma de Apostas</a>
@@ -108,8 +141,18 @@
                 <label for="data_evento">Data do Evento:</label>
                 <input type="date" id="data_evento" name="data_evento" required>
             </div>
+            <div class="form-group">
+                <label for="categoria">Categoria do Evento:</label>
+                <select id="categoria" name="categoria" required>
+                    <option value="Esportes">Esportes</option>
+                    <option value="Bolsa">Bolsa</option>
+                    <option value="Eventos Naturais">Eventos Naturais</option>
+                </select>
+            </div>
+
             <button type="submit" class="btn">Criar Evento</button>
         </form>
     </div>
 </body>
+
 </html>

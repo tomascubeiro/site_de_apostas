@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,6 +12,7 @@
             margin: 0;
             padding: 0;
         }
+
         .container {
             max-width: 600px;
             margin: 50px auto;
@@ -19,16 +21,20 @@
             border-radius: 5px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
+
         h2 {
             text-align: center;
         }
+
         .form-group {
             margin-bottom: 15px;
         }
+
         label {
             display: block;
             margin-bottom: 5px;
         }
+
         select {
             width: 100%;
             padding: 8px;
@@ -36,6 +42,7 @@
             border: 1px solid #ccc;
             border-radius: 3px;
         }
+
         .btn {
             display: block;
             width: 100%;
@@ -48,12 +55,45 @@
             border: none;
             cursor: pointer;
         }
+
         .btn:hover {
             background-color: #0056b3;
         }
+
+        .flash-messages {
+            margin-top: 20px;
+            padding: 10px;
+        }
+
+        .alert {
+            padding: 10px;
+            border-radius: 5px;
+            color: white;
+        }
+
+        .alert-success {
+            background-color: #4CAF50;
+        }
+
+        .alert-error {
+            background-color: #f44336;
+        }
     </style>
 </head>
+
 <body>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <div class="flash-messages">
+        {% for category, message in messages %}
+        <div class="alert alert-{{ category }}">
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    {% endwith %}
+
     <div class="container">
         <h2>Finalizar Evento</h2>
         <h3>{{ evento.titulo }}</h3>
@@ -71,4 +111,5 @@
         </form>
     </div>
 </body>
+
 </html>

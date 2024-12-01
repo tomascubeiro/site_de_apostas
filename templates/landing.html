@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,11 +12,12 @@
             padding: 550px;
             background-image: url('https://nexo-uploads-beta.s3.amazonaws.com/wp-content/uploads/images/2023/12/20221400/tigrinho_binary_342348.jpg');
             background-size: cover;
-            background-position: center; 
-            background-repeat: no-repeat; 
+            background-position: center;
+            background-repeat: no-repeat;
             color: #ffffff;
             text-align: center;
         }
+
         .container {
             position: absolute;
             top: 50%;
@@ -27,6 +29,7 @@
             background-color: rgba(0, 0, 0, 0.7);
             border-radius: 10px;
         }
+
         .btn {
             display: inline-block;
             margin: 10px;
@@ -38,12 +41,45 @@
             border: none;
             cursor: pointer;
         }
+
         .btn:hover {
             background-color: #0056b3;
         }
+
+        .flash-messages {
+            margin-top: 20px;
+            padding: 10px;
+        }
+
+        .alert {
+            padding: 10px;
+            border-radius: 5px;
+            color: white;
+        }
+
+        .alert-success {
+            background-color: #4CAF50;
+        }
+
+        .alert-error {
+            background-color: #f44336;
+        }
     </style>
 </head>
+
 <body>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <div class="flash-messages">
+        {% for category, message in messages %}
+        <div class="alert alert-{{ category }}">
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    {% endwith %}
+
     <div class="container">
         <h1>Bem-vindo à Plataforma de Apostas</h1>
         <p>Faça login ou registre-se para começar a apostar!</p>
@@ -51,4 +87,5 @@
         <a href="{{ url_for('signup') }}" class="btn">Registrar-se</a>
     </div>
 </body>
+
 </html>

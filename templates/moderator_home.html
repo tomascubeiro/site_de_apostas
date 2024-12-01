@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -26,6 +27,7 @@
             z-index: 1000;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
         }
+
         .navbar h1 {
             margin: 0;
             font-size: 20px;
@@ -45,7 +47,8 @@
             color: #000;
         }
 
-        h2, h3 {
+        h2,
+        h3 {
             text-align: center;
             color: #333;
         }
@@ -55,13 +58,19 @@
             border-collapse: collapse;
             margin-bottom: 20px;
         }
-        table, th, td {
+
+        table,
+        th,
+        td {
             border: 1px solid #ccc;
         }
-        th, td {
+
+        th,
+        td {
             padding: 10px;
             text-align: left;
         }
+
         th {
             background-color: #f8f8f8;
         }
@@ -78,18 +87,23 @@
             border: none;
             cursor: pointer;
         }
+
         .btn:hover {
             background-color: #0056b3;
         }
+
         .btn-approve {
             background-color: #28a745;
         }
+
         .btn-approve:hover {
             background-color: #218838;
         }
+
         .btn-reject {
             background-color: #dc3545;
         }
+
         .btn-reject:hover {
             background-color: #c82333;
         }
@@ -100,10 +114,48 @@
             border: 1px solid #ccc;
             border-radius: 3px;
         }
+
+        .flash-messages {
+            margin-top: 20px;
+            padding: 10px;
+        }
+
+        .alert {
+            padding: 10px;
+            border-radius: 5px;
+            color: white;
+        }
+
+        .alert-success {
+            background-color: #4CAF50;
+        }
+
+        .alert-error {
+            background-color: #f44336;
+        }
     </style>
 </head>
+
 <body>
-        <div class="navbar">
+    .flash-messages {
+    margin-top: 20px;
+    padding: 10px;
+    }
+
+    .alert {
+    padding: 10px;
+    border-radius: 5px;
+    color: white;
+    }
+
+    .alert-success {
+    background-color: #4CAF50;
+    }
+
+    .alert-error {
+    background-color: #f44336;
+    }
+    <div class="navbar">
         <h1>Painel do Moderador</h1>
     </div>
 
@@ -111,71 +163,75 @@
         <h2>Painel do Moderador</h2>
         <h3>Eventos Pendentes</h3>
         {% if eventos_pendentes %}
-            <table>
-                <thead>
-                    <tr>
-                        <th>Título</th>
-                        <th>Descrição</th>
-                        <th>Ações</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for evento in eventos_pendentes %}
-                        <tr>
-                            <td>{{ evento.titulo }}</td>
-                            <td>{{ evento.descricao }}</td>
-                            <td>
-                                <form action="{{ url_for('evaluate_event', event_id=evento.id) }}" method="post" style="display: inline;">
-                                    <input type="hidden" name="status" value="aprovado">
-                                    <button type="submit" class="btn btn-approve">Aprovar</button>
-                                </form>
-                                <form action="{{ url_for('evaluate_event', event_id=evento.id) }}" method="post" style="display: inline;">
-                                    <input type="hidden" name="status" value="reprovado">
-                                    <button type="submit" class="btn btn-reject">Reprovar</button>
-                                </form>
-                            </td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+        <table>
+            <thead>
+                <tr>
+                    <th>Título</th>
+                    <th>Descrição</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for evento in eventos_pendentes %}
+                <tr>
+                    <td>{{ evento.titulo }}</td>
+                    <td>{{ evento.descricao }}</td>
+                    <td>
+                        <form action="{{ url_for('evaluate_event', event_id=evento.id) }}" method="post"
+                            style="display: inline;">
+                            <input type="hidden" name="status" value="aprovado">
+                            <button type="submit" class="btn btn-approve">Aprovar</button>
+                        </form>
+                        <form action="{{ url_for('evaluate_event', event_id=evento.id) }}" method="post"
+                            style="display: inline;">
+                            <input type="hidden" name="status" value="reprovado">
+                            <button type="submit" class="btn btn-reject">Reprovar</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
         {% else %}
-            <p>Não há eventos pendentes.</p>
+        <p>Não há eventos pendentes.</p>
         {% endif %}
 
         <h3>Eventos Aprovados</h3>
         {% if eventos_aprovados %}
-            <table>
-                <thead>
-                    <tr>
-                        <th>Título</th>
-                        <th>Descrição</th>
-                        <th>Data do Evento</th>
-                        <th>Ações</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for evento in eventos_aprovados %}
-                        <tr>
-                            <td>{{ evento.titulo }}</td>
-                            <td>{{ evento.descricao }}</td>
-                            <td>{{ evento.data_evento }}</td>
-                            <td>
-                                <form action="{{ url_for('finish_event', event_id=evento.id) }}" method="post" style="display: inline;">
-                                    <label for="resultado">Resultado:</label>
-                                    <select id="resultado" name="resultado" required>
-                                        <option value="Sim">Sim</option>
-                                        <option value="Não">Não</option>
-                                    </select>
-                                    <button type="submit" class="btn">Finalizar Evento</button>
-                                </form>
-                            </td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+        <table>
+            <thead>
+                <tr>
+                    <th>Título</th>
+                    <th>Descrição</th>
+                    <th>Data do Evento</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for evento in eventos_aprovados %}
+                <tr>
+                    <td>{{ evento.titulo }}</td>
+                    <td>{{ evento.descricao }}</td>
+                    <td>{{ evento.data_evento }}</td>
+                    <td>
+                        <form action="{{ url_for('finish_event', event_id=evento.id) }}" method="post"
+                            style="display: inline;">
+                            <label for="resultado">Resultado:</label>
+                            <select id="resultado" name="resultado" required>
+                                <option value="Sim">Sim</option>
+                                <option value="Não">Não</option>
+                            </select>
+                            <button type="submit" class="btn">Finalizar Evento</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
         {% else %}
-            <p>Não há eventos aprovados no momento.</p>
+        <p>Não há eventos aprovados no momento.</p>
         {% endif %}
     </div>
 </body>
+
 </html>

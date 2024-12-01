@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,6 +12,7 @@
             margin: 0;
             padding: 0;
         }
+
         .navbar {
             background-color: #190d4a;
             overflow: hidden;
@@ -19,12 +21,14 @@
             justify-content: space-between;
             align-items: center;
         }
+
         .navbar a {
             color: #f16327;
             text-decoration: none;
             padding: 14px 20px;
             font-size: larger;
         }
+
         .navbar a:hover {
             background-color: #fc8b00;
             color: rgb(255, 255, 255);
@@ -48,11 +52,13 @@
         .form-group {
             margin-bottom: 15px;
         }
+
         label {
             display: block;
             margin-bottom: 5px;
             font-weight: bold;
         }
+
         input[type="number"] {
             width: 100%;
             padding: 10px;
@@ -76,11 +82,32 @@
             font-size: 16px;
             font-weight: bold;
         }
+
         .btn:hover {
             background-color: #0056b3;
         }
+
+        .flash-messages {
+            margin-top: 20px;
+            padding: 10px;
+        }
+
+        .alert {
+            padding: 10px;
+            border-radius: 5px;
+            color: white;
+        }
+
+        .alert-success {
+            background-color: #4CAF50;
+        }
+
+        .alert-error {
+            background-color: #f44336;
+        }
     </style>
 </head>
+
 <body>
     <div class="navbar">
         <a href="{{ url_for('home') }}">Plataforma de Apostas</a>
@@ -102,4 +129,5 @@
         </form>
     </div>
 </body>
+
 </html>
