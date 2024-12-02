@@ -2,6 +2,7 @@
 <html lang="en">
 
 <head>
+    <link rel="icon" href="{{ url_for('static', filename='betting.png') }}" type="image/png">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Criar Novo Evento - Plataforma de Apostas</title>
@@ -33,6 +34,18 @@
             background-color: #fc8b00;
             color: rgb(255, 255, 255);
             border-radius: 3px;
+        }
+
+        .navbar .logo {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            margin-left: 135px;
+        }
+
+        .navbar .logo img {
+            max-width: 75px;
+            height: auto;
         }
 
         .container {
@@ -108,11 +121,13 @@
 <body>
     <div class="navbar">
         <a href="{{ url_for('home') }}">Plataforma de Apostas</a>
-        <div>
-            <a href="{{ url_for('add_new_event') }}">Criar evento</a>
-            <a href="{{ url_for('wallet') }}">Minha Carteira</a>
-            <a href="{{ url_for('logout') }}">Sair</a>
+        <div class="logo">
+            <img src="{{ url_for('static', filename='betting.png') }}" alt="Logo da Plataforma">
         </div>
+        <a href="{{ url_for('add_new_event') }}">Criar evento</a>
+        <a href="{{ url_for('wallet') }}">Minha Carteira</a>
+        <a href="{{ url_for('logout') }}">Sair</a>
+    </div>
     </div>
     <div class="container">
         <h2>Criar Novo Evento</h2>

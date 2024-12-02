@@ -2,9 +2,10 @@
 <html lang="en">
 
 <head>
+    <link rel="icon" href="{{ url_for('static', filename='betting.png') }}" type="image/png">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Plataforma de Apostas</title>
+    <title>Betting</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -33,6 +34,18 @@
             background-color: #fc8b00;
             color: rgb(255, 255, 255);
             border-radius: 3px;
+        }
+
+        .navbar .logo {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            margin-left: 143px;
+        }
+
+        .navbar .logo img {
+            max-width: 75px;
+            height: auto;
         }
 
         .container {
@@ -194,6 +207,9 @@
 
     <div class="navbar">
         <a href="{{ url_for('home') }}">Plataforma de Apostas</a>
+        <div class="logo">
+            <img src="{{ url_for('static', filename='betting.png') }}" alt="Logo da Plataforma">
+        </div>
         <div>
             <a href="{{ url_for('add_new_event') }}">Criar evento</a>
             <a href="{{ url_for('wallet') }}">Minha Carteira</a>
@@ -220,10 +236,7 @@
 
     <div class="container">
         <h2>Painel do Usuário</h2>
-
         <div class="event-sections">
-
-            <!-- Seção de Eventos Mais Apostados -->
             <div class="event-section">
                 <h3>Eventos Mais Apostados</h3>
                 {% if eventos_mais_apostados %}
@@ -240,8 +253,6 @@
                 <p>Não há eventos mais apostados no momento.</p>
                 {% endif %}
             </div>
-
-            <!-- Seção de Eventos Próximos ao Fim do Prazo -->
             <div class="event-section">
                 <h3>Eventos Próximos ao Fim do Prazo</h3>
                 {% if eventos_proximos %}
@@ -258,8 +269,6 @@
                 <p>Não há eventos próximos ao fim do prazo no momento.</p>
                 {% endif %}
             </div>
-
-            <!-- Seção de Todos os Eventos Disponíveis -->
             <div class="event-section">
                 <h3>Eventos Disponíveis</h3>
                 {% if eventos_disponiveis %}

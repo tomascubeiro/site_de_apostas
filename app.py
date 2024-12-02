@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, redirect, url_for, session, f
 import mysql.connector
 from decimal import Decimal
 from mysql.connector import errorcode
+from datetime import datetime, timedelta
 
 app = Flask(__name__)
 app.secret_key = 'geleia'
@@ -30,8 +31,6 @@ def get_db_connection():
 @app.route('/')
 def landing():
         return render_template('landing.html')
-
-from datetime import datetime, timedelta
 
 @app.route('/home')
 def home():
@@ -209,39 +208,50 @@ def login():
 
 @app.route('/addNewEvent', methods=['GET', 'POST'])
 def add_new_event():
-        if 'user_id' not in session:
-            flash('Você precisa estar logado para criar um evento.', 'error')
-            return redirect(url_for('login'))
+    if 'user_id' not in session:
+        flash('Você precisa estar logado para criar um evento.', 'error')
+        return redirect(url_for('login'))
+    
+    if request.method == 'POST':
+        titulo = request.form['titulo']
+        descricao = request.form['descricao']
+        valor_cota = request.form['valor_cota']
+        data_evento = request.form['data_evento']
+        inicio_apostas = request.form['inicio_apostas']
+        fim_apostas = request.form['fim_apostas']
+        categoria = request.form['categoria']
         
-        if request.method == 'POST':
-            titulo = request.form['titulo']
-            descricao = request.form['descricao']
-            valor_cota = request.form['valor_cota']
-            data_evento = request.form['data_evento']
-            inicio_apostas = request.form['inicio_apostas']
-            fim_apostas = request.form['fim_apostas']
-            categoria = request.form['categoria']
-            
-            conn = get_db_connection()
-            if conn is None:
-                flash('Erro ao conectar ao banco de dados. Por favor, tente mais tarde.', 'error')
-                return redirect(url_for('add_new_event'))
+        try:
+            inicio_apostas = datetime.strptime(inicio_apostas, '%Y-%m-%dT%H:%M')
+            fim_apostas = datetime.strptime(fim_apostas, '%Y-%m-%dT%H:%M')
+        except ValueError:
+            flash('Formato de data inválido. Use o formato correto.', 'error')
+            return redirect(url_for('add_new_event'))
 
-            cursor = conn.cursor()
-            try:
-                cursor.execute("""
-                    INSERT INTO eventos (titulo, descricao, valor_cota, data_evento, inicio_apostas, fim_apostas, criador_id, status, categoria) 
-                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
-                """, (titulo, descricao, valor_cota, data_evento, inicio_apostas, fim_apostas, session['user_id'], 'aguardando_aprovacao', categoria))
-                conn.commit()
-                flash('Evento criado com sucesso! Aguarde aprovação.', 'success')
-            except mysql.connector.Error as err:
-                flash(f'Erro ao criar evento: {err}', 'error')
-            finally:
-                cursor.close()
-                conn.close()
-            return redirect(url_for('home'))
-        return render_template('add_event.html')
+        if fim_apostas < inicio_apostas:
+            flash('A data de fim das apostas não pode ser antes da data de início das apostas.', 'error')
+            return redirect(url_for('add_new_event'))
+        
+        conn = get_db_connection()
+        if conn is None:
+            flash('Erro ao conectar ao banco de dados. Por favor, tente mais tarde.', 'error')
+            return redirect(url_for('add_new_event'))
+
+        cursor = conn.cursor()
+        try:
+            cursor.execute("""
+                INSERT INTO eventos (titulo, descricao, valor_cota, data_evento, inicio_apostas, fim_apostas, criador_id, status, categoria) 
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+            """, (titulo, descricao, valor_cota, data_evento, inicio_apostas, fim_apostas, session['user_id'], 'aguardando_aprovacao', categoria))
+            conn.commit()
+            flash('Evento criado com sucesso! Aguarde aprovação.', 'success')
+        except mysql.connector.Error as err:
+            flash(f'Erro ao criar evento: {err}', 'error')
+        finally:
+            cursor.close()
+            conn.close()
+        return redirect(url_for('home'))
+    return render_template('add_event.html')
 
 
 @app.route('/addFunds', methods=['GET', 'POST'])
@@ -288,9 +298,12 @@ def wallet():
         saldo = cursor.fetchone()['saldo']
         cursor.execute("SELECT * FROM apostas WHERE usuario_id=%s", (session['user_id'],))
         apostas = cursor.fetchall()
+        cursor.execute("SELECT * FROM saques WHERE usuario_id=%s", (session['user_id'],))
+        saques = cursor.fetchall()
+
         cursor.close()
         conn.close()
-        return render_template('wallet.html', saldo=saldo, apostas=apostas)
+        return render_template('wallet.html', saldo=saldo, apostas=apostas, saques=saques)
 
 def calcular_taxa(valor):
         if valor <= 100:
@@ -375,53 +388,58 @@ def withdraw():
 
 @app.route('/betOnEvent/<int:event_id>', methods=['GET', 'POST'])
 def bet_on_event(event_id):
-        if 'user_id' not in session:
-            flash('Você precisa estar logado para fazer uma aposta.', 'error')
-            return redirect(url_for('login'))
-        
-        if request.method == 'POST':
-            valor_aposta = request.form['valor_aposta']
-            escolha = request.form['escolha']
-            
-            conn = get_db_connection()
-            if conn is None:
-                flash('Erro ao conectar ao banco de dados. Por favor, tente mais tarde.', 'error')
-                return redirect(url_for('bet_on_event', event_id=event_id))
+    if 'user_id' not in session:
+        flash('Você precisa estar logado para fazer uma aposta.', 'error')
+        return redirect(url_for('login'))
+    
+    conn = get_db_connection()
+    if conn is None:
+        flash('Erro ao conectar ao banco de dados. Por favor, tente mais tarde.', 'error')
+        return redirect(url_for('home'))
 
-            cursor = conn.cursor(dictionary=True)
-            cursor.execute("SELECT saldo FROM usuarios WHERE id=%s", (session['user_id'],))
-            saldo = cursor.fetchone()['saldo']
-            
-            if saldo >= float(valor_aposta):
-                try:
-                    cursor.execute("INSERT INTO apostas (evento_id, usuario_id, valor, escolha) VALUES (%s, %s, %s, %s)",
-                                (event_id, session['user_id'], valor_aposta, escolha))
-                    cursor.execute("UPDATE usuarios SET saldo = saldo - %s WHERE id = %s", (valor_aposta, session['user_id']))
-                    conn.commit()
-                    flash('Aposta realizada com sucesso!', 'success')
-                except mysql.connector.Error as err:
-                    flash(f'Erro ao realizar aposta: {err}', 'error')
-                finally:
-                    cursor.close()
-                    conn.close()
-            else:
-                flash('Saldo insuficiente para realizar a aposta.', 'error')
-                cursor.close()
-                conn.close()
-                return redirect(url_for('bet_on_event', event_id=event_id))
-            return redirect(url_for('home'))
-        
-        conn = get_db_connection()
-        if conn is None:
-            flash('Erro ao conectar ao banco de dados. Por favor, tente mais tarde.', 'error')
-            return redirect(url_for('home'))
+    cursor = conn.cursor(dictionary=True)
+    
+    cursor.execute("SELECT * FROM eventos WHERE id=%s AND status != 'finalizado'", (event_id,))
+    evento = cursor.fetchone()
 
-        cursor = conn.cursor(dictionary=True)
-        cursor.execute("SELECT * FROM eventos WHERE id=%s AND status != 'finalizado'", (event_id,))
-        evento = cursor.fetchone()
+    if not evento:
+        flash('Evento não encontrado ou já finalizado.', 'error')
         cursor.close()
         conn.close()
-        return render_template('bet_on_event.html', evento=evento)
+        return redirect(url_for('home'))
+
+    if request.method == 'POST':
+        valor_aposta = float(request.form['valor_aposta'])
+        escolha = request.form['escolha']
+
+        if valor_aposta < evento['valor_cota']:
+            flash(f'O valor mínimo de aposta é R$ {evento["valor_cota"]:.2f}.', 'error')
+            cursor.close()
+            conn.close()
+            return redirect(url_for('bet_on_event', event_id=evento['id']))
+        
+        cursor.execute("SELECT saldo FROM usuarios WHERE id=%s", (session['user_id'],))
+        saldo = cursor.fetchone()['saldo']
+
+        if saldo >= valor_aposta:
+            try:
+                cursor.execute("INSERT INTO apostas (evento_id, usuario_id, valor, escolha) VALUES (%s, %s, %s, %s)",
+                               (event_id, session['user_id'], valor_aposta, escolha))
+                cursor.execute("UPDATE usuarios SET saldo = saldo - %s WHERE id = %s", (valor_aposta, session['user_id']))
+                conn.commit()
+                flash('Aposta realizada com sucesso!', 'success')
+            except mysql.connector.Error as err:
+                flash(f'Erro ao realizar aposta: {err}', 'error')
+        else:
+            flash('Saldo insuficiente para realizar a aposta.', 'error')
+        
+        cursor.close()
+        conn.close()
+        return redirect(url_for('home'))
+    
+    cursor.close()
+    conn.close()
+    return render_template('bet_on_event.html', evento=evento)
 
 
 @app.route('/evaluateEvent/<int:event_id>', methods=['GET', 'POST'])
